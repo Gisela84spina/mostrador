@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import logo from "../assets/logo-sucule66.jpg"
+import {CLIENTE} from "../config/cliente";
 
 
 export default function Footer() {
@@ -54,18 +55,18 @@ export default function Footer() {
             Contacto
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
-            <li className="text-gray-400">
+            <li className="text-gray-800">
               Atención personalizada
             </li>
             <li>
             <p className="text-sm text-gray-500 leading-relaxed">
   <a
-    href="https://www.google.com/maps/search/?api=1&query=Almirante+Brown+1171,+Junín,+Buenos+Aires,+Argentina"
+    href="https://www.google.com/maps/search/?api=1&query=Juan+B+Justo+315,+Junín,+Buenos+Aires,+Argentina"
     target="_blank"
     rel="noopener noreferrer"
     className="hover:text-blue-300 transition"
   >
-    Almirante Brown 1171, Junín, Buenos Aires<br />
+    Juan B. Justo 315, Junín, Buenos Aires<br />
     Argentina
   </a>
 </p>
@@ -83,7 +84,7 @@ export default function Footer() {
           <div className="flex gap-5 text-2xl">
             {/* Facebook */}
             <a
-              href="#" // pegá acá tu link real
+              href="https://www.facebook.com/share/16mcKH5eKM/" // pegá acá tu link real
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -105,9 +106,10 @@ export default function Footer() {
 
             {/* WhatsApp */}
             <a
-              href={"https://wa.me/${cliente.numero}"}
+              href={`https://wa.me/${CLIENTE.telefono}`}
               target="_blank"
               rel="noopener noreferrer"
+
               aria-label="WhatsApp"
               className="hover:text-white hover:scale-110 transition-transform"
             >

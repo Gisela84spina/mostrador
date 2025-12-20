@@ -81,7 +81,7 @@ setProducto({
 
         <h1 className="text-2xl font-semibold mb-2">{producto.nombre}</h1>
 
-        <p className="text-xl text-blue-700 font-bold mb-2">
+        <p className="text-xl text-green-700 font-bold mb-2">
           ${producto.precio}
         </p>
 
@@ -90,11 +90,23 @@ setProducto({
         </p>
 
         <button
-          onClick={() => agregarAlCarrito(producto)}
-          className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-5 rounded-lg text-lg"
-        >
-          Agregar al carrito
-        </button>
+  onClick={() => agregarAlCarrito(producto)}
+  className="
+    w-full
+    bg-green-700
+    hover:bg-green-800
+    text-white
+    py-3
+    rounded-xl
+    text-base
+    font-medium
+    transition-colors
+  "
+>
+  Agregar al carrito
+</button>
+
+        
       </div>
     </div>
   );
