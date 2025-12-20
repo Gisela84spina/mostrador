@@ -1,31 +1,36 @@
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
-
+import logo from "../assets/logo-sucule66.jpg"
 
 
 export default function Footer() {
   
 
   return (
-    <footer className="w-full bg-gradient-to-b from-gray-900 to-black text-gray-300 mt-20">
+    <footer className="w-full bg-gradient-to-b from-[#E6DDCF] to-[#C6CBB9] text-gray-800 mt-20">
+
       
       {/* CONTENEDOR */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 gap-12 md:grid-cols-4">
 
         {/* MARCA */}
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-wide">
-            Tienda Digital
-          </h2>
-          <p className="mt-4 text-sm text-gray-400 leading-relaxed">
-            E-commerce simple, funcional y directo.  
-            Comprá fácil, consultá rápido y recibí atención real.
-          </p>
-        </div>
+  <img
+    src={logo}
+    alt="Sucule66"
+    className="h-16 mb-4 object-contain"
+  />
+
+  <p className="text-sm text-gray-600 leading-relaxed">
+    Tienda de productos naturales y seleccionados 🌿  
+    Comprá fácil, consultá rápido y recibí atención real.
+  </p>
+</div>
+
 
         {/* NAVEGACIÓN */}
         <div>
-          <h3 className="text-white font-semibold text-lg mb-4 border-b border-gray-700 pb-2">
+          <h3 className="text-white font-semibold text-lg mb-4 border-b border-[#B7B1A4] pb-2">
             Navegación
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
@@ -45,7 +50,7 @@ export default function Footer() {
 
         {/* CONTACTO */}
         <div>
-          <h3 className="text-white font-semibold text-lg mb-4 border-b border-gray-700 pb-2">
+          <h3 className="text-white font-semibold text-lg mb-4 border-b border-[#B7B1A4] pb-2">
             Contacto
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
@@ -71,7 +76,7 @@ export default function Footer() {
 
         {/* REDES */}
         <div>
-          <h3 className="text-white font-semibold text-lg mb-4 border-b border-gray-700 pb-2">
+          <h3 className="text-white font-semibold text-lg mb-4 border-b border-[#B7B1A4] pb-2">
             Redes
           </h3>
 
@@ -89,7 +94,7 @@ export default function Footer() {
 
             {/* Instagram */}
             <a
-              href="#" // pegá acá tu link real
+              href="https://www.instagram.com/sucule66?igsh=MMW94NjB1aDh6ejdmZq==" //  link real del cliente
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -100,11 +105,11 @@ export default function Footer() {
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/5492364539044"
+              href={"https://wa.me/${cliente.numero}"}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
-              className="hover:text-green-400 hover:scale-110 transition-transform"
+              className="hover:text-white hover:scale-110 transition-transform"
             >
               <FaWhatsapp />
             </a>
@@ -114,8 +119,8 @@ export default function Footer() {
       </div>
 
       {/* LÍNEA FINAL */}
-      <div className="border-t border-gray-800 text-center py-5 text-xs text-gray-500">
-        © {new Date().getFullYear()} Tienda Digital · Hecho por Gise  
+      <div className="border-t border-[#C6CBB9] text-center py-5 text-xs text-gray-500">
+        © {new Date().getFullYear()} Tienda Digital - Sucu Le · Hecho por Gise  
         <div className="mt-1">
           Última actualización: {new Date().toLocaleDateString()}
         </div>

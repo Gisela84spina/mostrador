@@ -18,8 +18,8 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const ADMIN_EMAIL = "admin@tienda.com";
-    const ADMIN_PASS = "1234";
+    const ADMIN_EMAIL = "sucule@tienda.com";
+    const ADMIN_PASS = "1966";
 
     if (email.trim() === ADMIN_EMAIL && password.trim() === ADMIN_PASS) {
       localStorage.setItem("adminLogged", "true");
@@ -30,7 +30,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center 
+    bg-gradient-to-br from-[#E6DDCF] to-[#C6CBB9]
+">
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-xl p-6 shadow-lg w-[90%] max-w-sm"
@@ -57,7 +59,8 @@ export default function Login() {
           required
         />
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold">
+        <button className="w-full bg-[#6A7F5A] hover:bg-[#7A8F6A]
+          text-white py-2 rounded-lg font-semibold">
           Ingresar
         </button>
       </form>

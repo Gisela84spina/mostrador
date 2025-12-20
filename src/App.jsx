@@ -9,6 +9,9 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProductPage from "./pages/ProductPage";
+import { CLIENTE } from "./config/cliente";
+
+
 
 import { db } from "./firebase";
 
@@ -23,8 +26,9 @@ import {
 
 
 function App() {
-  const WHATSAPP_NUM = "5492364539044"; // numero de celular para wsp
+ 
   const [productos, setProductos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
  
   // -------------------------
@@ -175,6 +179,8 @@ useEffect(() => {
     );
   };
   const enviarCarritoPorWhatsApp = () => {
+
+  
     if (carrito.length === 0) return;
   
     const items = carrito
@@ -191,7 +197,8 @@ useEffect(() => {
   
     const mensaje = `Hola! Quiero realizar este pedido:\n\n${items}\n\n🧾 Total: $${total}`;
   
-    const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(mensaje)}`;
+    const url = `https://wa.me/${CLIENTE.telefono}?text=${encodeURIComponent(mensaje)}`;
+
     window.open(url, "_blank");
   };
    
@@ -229,17 +236,22 @@ useEffect(() => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
 
-      <Header
-        onCartOpen={() => {}}
-        cartCount={carrito.reduce((sum, item) => sum + (item.cantidad ?? 1), 0)}
-      />
+<Header
+  cartCount={carrito.reduce((sum, item) => sum + (item.cantidad ?? 1), 0)}
+  searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
+/>
 
     <main className="flex-1 w-full ">
 
       <Routes>
          <Route 
            path="/" 
-           element={<Home productos={productos} agregarAlCarrito={agregarAlCarrito} />} 
+           element={<Home productos={productos} 
+           agregarAlCarrito={agregarAlCarrito} 
+           searchTerm={searchTerm}
+           />
+          } 
        />
 
           <Route

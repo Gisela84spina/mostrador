@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 import Carrusel from "../components/Carrusel";
 
 
-export default function Home({ productos, agregarAlCarrito }) {
+export default function Home({ productos, agregarAlCarrito, searchTerm }) {
   
   
 
-  const [searchTerm, setSearchTerm] = useState("");
+  
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortByPrice, setSortByPrice] = useState("");
   const activos = productos.filter(p => !p.eliminado);
@@ -34,7 +34,13 @@ export default function Home({ productos, agregarAlCarrito }) {
     });
 
   return (
-    <div className="p-6">
+    <div
+  className="min-h-screen p-6"
+  style={{
+    background: "linear-gradient(to bottom right, #E6DDCF, #C6CBB9)"
+  }}
+>
+
       
 
       <Carrusel />
@@ -44,33 +50,26 @@ export default function Home({ productos, agregarAlCarrito }) {
       </h1>
 
       {/* --- FILTROS UI --- */}
-      <div className="filters flex flex-wrap gap-4 mb-6">
-        {/* Buscador */}
-        <input className="border p-2 rounded w-full sm:w-auto"
-
-          
-          type="text"
-          placeholder="Buscar producto..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          
-        />
-
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        
         {/* Categorías */}
-        <select className="border p-2 rounded w-full sm:w-auto"
+        <select className="border p-3 rounded-xl w-full sm:w-auto
+         bg-white shadow-sm"
 
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
           
         >
           <option value="all">Todas las categorías</option>
-          <option value="ropa">Ropa</option>
-          <option value="accesorios">Accesorios</option>
-          <option value="calzado">Calzado</option>
+          <option value="plantas chicas">Plantas chicas</option>
+          <option value="plantas grandes">Plantas grandes</option>
+          <option value="mix chicos">Mix chicos</option>
+          <option value="mix grandes">Mix grandes</option>
         </select>
 
         {/* Precio */}
-        <select className="border p-2 rounded w-full sm:w-auto"
+        <select className="border p-3 rounded-xl w-full sm:w-auto
+         bg-white shadow-sm"
 
           value={sortByPrice}
           onChange={(e) => setSortByPrice(e.target.value)}
@@ -88,7 +87,7 @@ export default function Home({ productos, agregarAlCarrito }) {
       )}
 
       {/* Lista de productos filtrados */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {filteredProducts.map((prod) => (
     <div key={prod.id} className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
 
@@ -96,7 +95,7 @@ export default function Home({ productos, agregarAlCarrito }) {
       <img
         src={prod.imagenes?.[0] || prod.imagen || "/placeholder.png"} 
         alt={prod.nombre}
-        className="w-28 h-28 object-cover mb-3"
+        className="w-24 h-24 sm:w-28 sm:h-28 object-cover mb-3"
       />
   
       <h3 className="text-lg font-semibold">{prod.nombre}</h3>
@@ -110,8 +109,8 @@ export default function Home({ productos, agregarAlCarrito }) {
         setTimeout(() => setAgregado(null), 1200);
       }}
       className={`py-2 px-4 rounded-lg transition text-white 
-        ${agregado === prod.id ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}
-      `}
+     ${agregado === prod.id ? "bg-[#6F8A6D]" : "bg-[#7A8F6A] hover:bg-[#6A7F5A]"}
+    `}
     >
       {agregado === prod.id ? "✔ Agregado!" : "Agregar al carrito"}
     </button>
