@@ -111,10 +111,11 @@ for (const file of files) {
           onChange={(e) => setCategoria(e.target.value)}
           required
         >
-          <option value="">Categoría</option>
-          <option value="ropa">Ropa</option>
-          <option value="calzado">Calzado</option>
-          <option value="accesorios">Accesorios</option>
+          <option value="all">Todas las categorías</option>
+          <option value="plantas chicas">Plantas chicas</option>
+          <option value="plantas grandes">Plantas grandes</option>
+          <option value="mix chicos">Mix chicos</option>
+          <option value="mix grandes">Mix grandes</option>
         </select>
 
         <input
