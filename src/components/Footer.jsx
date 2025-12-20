@@ -59,16 +59,31 @@ export default function Footer() {
               Atención personalizada
             </li>
             <li>
-            <p className="text-sm text-gray-500 leading-relaxed">
-  <a
+            <p className="text-sm text-gray-800 leading-relaxed">
+ {/* <a
     href="https://www.google.com/maps/search/?api=1&query=Juan+B+Justo+315,+Junín,+Buenos+Aires,+Argentina"
     target="_blank"
     rel="noopener noreferrer"
     className="hover:text-blue-300 transition"
-  >
-    Juan B. Justo 315, Junín, Buenos Aires<br />
-    Argentina
-  </a>
+  >*/}
+   <div className="flex gap-5 text-2xl">
+   {/* WhatsApp */}
+   <a
+              href={`https://wa.me/${CLIENTE.telefono}`}
+              target="_blank"
+              rel="noopener noreferrer"
+
+              aria-label="WhatsApp"
+              className="hover:text-white hover:scale-110 transition-transform"
+            >
+              <FaWhatsapp />
+            </a> <br />
+            </div>
+            <li className="text-gray-800">
+             📍 Junín, Buenos Aires
+</li>
+
+   {/*</a>*/}
 </p>
 
             </li>
@@ -104,17 +119,7 @@ export default function Footer() {
               <FaInstagram />
             </a>
 
-            {/* WhatsApp */}
-            <a
-              href={`https://wa.me/${CLIENTE.telefono}`}
-              target="_blank"
-              rel="noopener noreferrer"
-
-              aria-label="WhatsApp"
-              className="hover:text-white hover:scale-110 transition-transform"
-            >
-              <FaWhatsapp />
-            </a>
+           
           </div>
         </div>
 
