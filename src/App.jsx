@@ -163,9 +163,17 @@ useEffect(() => {
             : item
         );
       }
+      const imagen = 
+      producto.imagenes?.[0] || 
+      producto.imagen ||
+      "./placeholder.png" 
+
   
       // BLINDEO: si viene sin cantidad, le pongo 1
-      return [...prev, { ...producto, cantidad: producto.cantidad ?? 1 }];
+      return [...prev, { ...producto, cantidad: producto.cantidad ?? 1,
+        imagen
+       
+       }];
     });
   };
   

@@ -58,15 +58,15 @@ export default function Footer() {
             <li className="text-gray-800">
               Atención personalizada
             </li>
-            <li>
-            <p className="text-sm text-gray-800 leading-relaxed">
+            <li  className="flex gap-5 text-2xl">
+           
  {/* <a
     href="https://www.google.com/maps/search/?api=1&query=Juan+B+Justo+315,+Junín,+Buenos+Aires,+Argentina"
     target="_blank"
     rel="noopener noreferrer"
     className="hover:text-blue-300 transition"
   >*/}
-   <div className="flex gap-5 text-2xl">
+   
    {/* WhatsApp */}
    <a
               href={`https://wa.me/${CLIENTE.telefono}`}
@@ -78,18 +78,18 @@ export default function Footer() {
             >
               <FaWhatsapp />
             </a> <br />
-            </div>
+            </li>
             <li className="text-gray-800">
-             📍 Junín, Buenos Aires
-</li>
+             📍 Junín, Buenos Aires</li>
+
 
    {/*</a>*/}
-</p>
 
-            </li>
+
+            
           </ul>
-        </div>
-
+          </div>
+        
         {/* REDES */}
         <div>
           <h3 className="text-white font-semibold text-lg mb-4 border-b border-[#B7B1A4] pb-2">

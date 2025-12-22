@@ -31,7 +31,7 @@ const CartPage = ({
             >
               <div className="flex items-center space-x-4">
                 <img
-                  src={item.imagen}
+                  src={item.imagen || item.imagen || "./placeholder.png" }
                   alt={item.nombre}
                   className="w-20 h-20 object-cover rounded-lg shadow-sm"
                 />
