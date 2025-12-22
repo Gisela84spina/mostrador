@@ -242,7 +242,12 @@ useEffect(() => {
   // -------------------------
 
   return (
+
+    
     <div className="min-h-screen flex flex-col bg-gray-50">
+     <div className="w-full text-center text-xs tracking-widest text-gray-700 py-2 bg-[#E6DDCF]">
+  SUCULENTAS · REGALOS · EVENTOS
+</div>
 
 <Header
   cartCount={carrito.reduce((sum, item) => sum + (item.cantidad ?? 1), 0)}
