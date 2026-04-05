@@ -1,25 +1,52 @@
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc
+} from "firebase/firestore";
 import { db } from "../firebase";
 
-export async function cargarProductos() {
-  const q = query(
-    collection(db, "productos"),
-    orderBy("createdAt", "desc")
-  );
+const PATH = ["proyecto", "colombo", "productos"];
 
-  const snapshot = await getDocs(q);
+/* ===== LEER ===== */
+export async function getProductos() {
+  const snap = await getDocs(collection(db, ...PATH));
+  const lista = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
 
-  return snapshot.docs.map(doc => {
-    const data = doc.data();
-    return {
-    id: doc.id,
-    ...data,
-    imagenes: data.imagenes?.length
-    ? data.imagenes
-    : data.imagenes
-      ? [data.imagen]
-      : []
-    };
-  });
+  // cache offline
+  localStorage.setItem("productos", JSON.stringify(lista));
+
+  return lista;
 }
 
+/* ===== LEER LOCAL (offline) ===== */
+export function getProductosLocal() {
+  const local = localStorage.getItem("productos");
+  return local ? JSON.parse(local) : [];
+}
+
+/* ===== AGREGAR ===== */
+export async function addProducto(producto) {
+  await addDoc(collection(db, ...PATH), producto);
+  return getProductos(); // refresca cache
+}
+
+/* ===== ACTUALIZAR ===== */
+export async function updateProducto(id, cambios) {
+  await updateDoc(
+    doc(db, ...PATH, id),
+    cambios
+  );
+  return getProductos();
+}
+
+/* ===== BORRAR ===== */
+export async function deleteProducto(id) {
+  await deleteDoc(doc(db, ...PATH, id));
+  return getProductos();
+}

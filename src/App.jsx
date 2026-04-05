@@ -1,320 +1,336 @@
-
-import Header from "./components/Header";
-import CartPage from "./pages/CartPage";
-import Footer from "./components/Footer";
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import AdminDashboard from "./pages/AdminDashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ProductPage from "./pages/ProductPage";
-import { CLIENTE } from "./config/cliente";
+import {Routes, Route } from "react-router-dom";
+import { getProductos } from "./services/products.service";
+
+import Mostrador from "./pages/Mostrador";
+import Ventas from "./pages/ventas";
+import Admin from "./pages/Admin";
+import AdminProductos from "./pages/AdminProductos";
+import HistorialVentas from "./pages/HistorialVentas";
+import HistorialDia from "./pages/HistorialDia";
+import Salidas from "./pages/Salidas";
 
 
 
-import { db } from "./firebase";
+/* =======================
+   SONIDOS
+======================= */
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-import { 
-  collection,
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  doc 
-} from "firebase/firestore";
+const playBeep = () => {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
 
+  osc.type = "square";
+  osc.frequency.value = 1200;
+  gain.gain.value = 0.1;
 
+  osc.connect(gain);
+  gain.connect(ctx.destination);
 
-function App() {
- 
-  const [productos, setProductos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  osc.start();
+  osc.stop(ctx.currentTime + 0.08);
+};
 
- 
-  // -------------------------
-  // CARGAR PRODUCTOS
-  // -------------------------
-  const cargarProductos = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "productos"));
-  
-      const lista = querySnapshot.docs.map(docu => {
-        const data = docu.data();
-  
-        return {
-          id: docu.id,
-          ...data,
-          eliminado: data.eliminado ?? false,
-          imagenes: Array.isArray(data.imagenes) && data.imagenes.length > 0
-            ? data.imagenes
-            : data.imagen
-              ? [data.imagen]
-              : []
-        };
-      });
-  
-      setProductos(lista);
-    } catch (error) {
-      console.error("Error cargando productos:", error);
-    }
-  };
-  
+const playError = () => {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
 
-  const actualizarProductoFirebase = async (producto) => {
-    try {
-      const ref = doc(db, "productos", producto.id);
-      await updateDoc(ref, {
-        nombre: producto.nombre,
-        precio: producto.precio,
-        imagenes: producto.imagenes ?? [],
-        descripcion: producto.descripcion ?? "",
-        categoria: producto.categoria ?? ""
-      });
-      cargarProductos();
-    } catch (error) {
-      console.error("Error actualizando producto:", error);
-    }
-  };
-  
-  
-  
-  const agregarProducto = async (producto) => {
-    try {
-      await addDoc(collection(db, "productos"), {
-        ...producto,
-        eliminado: false,
-      });
-      cargarProductos();
-    } catch (error) {
-      console.error("Error agregando producto:", error);
-    }
-  };
+  osc.type = "sawtooth";
+  osc.frequency.value = 300;
+  gain.gain.value = 0.15;
 
-  const [adminLogueado, setAdminLogueado] = useState(false);
-  
-  const [carrito, setCarrito] = useState([]);
-  const [total, setTotal] = useState(0);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
 
-  // CARGAR CARRITO DESDE LOCALSTORAGE
-useEffect(() => {
-  const guardado = localStorage.getItem("carrito");
-  if (guardado) {
-    setCarrito(JSON.parse(guardado));
-  }
-}, []);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.15);
+};
 
-// GUARDAR CARRITO EN LOCALSTORAGE
-useEffect(() => {
-  if (carrito.length > 0) {
-    localStorage.setItem("carrito", JSON.stringify(carrito));
-  } else {
-    localStorage.removeItem("carrito");
-  }
-}, [carrito]);
+const playVentaOk = () => {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
 
-
-//blindaje recalcula total
-
-useEffect(() => {
-  console.log("Carrito para total:", carrito);
-  const nuevo = carrito.reduce(
-    (acc, item) => acc + item.precio * (item.cantidad ?? 1),
-    0
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(600, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(
+    1200,
+    ctx.currentTime + 0.15
   );
-  console.log("total calculado:", nuevo);
-  setTotal(nuevo);
-}, [carrito]);
 
-  // -------------------------
-  // RESTAR
-  // -------------------------
-  const restarDelCarrito = (producto) => {
-    const id = producto.id;
-  
-    setCarrito(prev =>
-      prev
-        .map(item => {
-          if (item.id === id) {
-            const nueva = item.cantidad - 1;
-            return nueva > 0 ? { ...item, cantidad: nueva } : null;
-          }
-          return item;
-        })
-        .filter(Boolean)
-    );
-  };
-  
-  const eliminarDelCarrito = (producto) => {
-    const id = producto.id;
-    setCarrito(prev => prev.filter(item => item.id !== id));
-  };
+  gain.gain.value = 0.12;
 
-  // -------------------------
-  // AGREGAR AL CARRITO (SUMAR)
-  // -------------------------
-  const agregarAlCarrito = (producto) => {
-    setCarrito(prev => {
-      const existe = prev.find(item => item.id === producto.id);
-  
-      if (existe) {
-        return prev.map(item =>
-          item.id === producto.id
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start();
+  osc.stop(ctx.currentTime + 0.2);
+};
+
+/* =======================
+   LIMPIEZA VENTAS VIEJAS
+======================= */
+const limpiarVentasViejas = () => {
+  const LIMITE_DIAS = 30;
+  const ahora = Date.now();
+
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("ventas_")) {
+      const fecha = key.replace("ventas_", "");
+      const tiempo = new Date(fecha).getTime();
+
+      if (!isNaN(tiempo)) {
+        const dias = (ahora - tiempo) / (1000 * 60 * 60 * 24);
+        if (dias > LIMITE_DIAS) {
+          localStorage.removeItem(key);
+        }
       }
-      const imagen = 
-      producto.imagenes?.[0] || 
-      producto.imagen ||
-      "./placeholder.png" 
-
-  
-      // BLINDEO: si viene sin cantidad, le pongo 1
-      return [...prev, { ...producto, cantidad: producto.cantidad ?? 1,
-        imagen
-       
-       }];
-    });
-  };
-  
-  const aumentarCantidad = (id) => {
-    setCarrito(prev =>
-      prev.map(item =>
-        item.id === id
-          ? { ...item, cantidad: item.cantidad + 1 }
-          : item
-      )
-    );
-  };
-  const enviarCarritoPorWhatsApp = () => {
-
-  
-    if (carrito.length === 0) return;
-  
-    const items = carrito
-      .map(item => 
-  `🛍️ ${item.nombre}
-  🆔 ID: ${item.id}
-  📦 Cantidad: ${item.cantidad}
-  💲 Precio unitario: $${item.precio}
-  💰 Subtotal: $${item.precio * item.cantidad}
-  🖼️ Imagen:
-  ${item.imagenes?.[0] || "Sin imagen"}`
-      )
-      .join("\n\n----------------------\n\n");
-  
-    const mensaje = `Hola! Quiero realizar este pedido:\n\n${items}\n\n🧾 Total: $${total}`;
-  
-    const url = `https://wa.me/${CLIENTE.telefono}?text=${encodeURIComponent(mensaje)}`;
-
-    window.open(url, "_blank");
-  };
-   
-  
-  
-
-  const eliminarProductoFirebase = async (id) => {
-    try {
-      const ref = doc(db, "productos", id);
-      await updateDoc(ref, { eliminado: true });
-      cargarProductos();
-    } catch (error) {
-      console.error("Error eliminando producto:", error);
     }
+  });
+};
+
+/* =======================
+   APP
+======================= */
+function App() {
+  const [productos, setProductos] = useState([]);
+  const [carrito, setCarrito] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [total, setTotal] = useState(0);
+  const [ventaOk, setVentaOk] = useState(false);
+  const [modoEscaner, setModoEscaner] = useState(false);
+  const [ventas, setVentas] = useState([]);
+  const [devoluciones, setDevoluciones] = useState([]);
+
+
+  const hoy = new Date().toISOString().slice(0, 10);
+
+  const ventasDelDia = ventas.filter(v => v.fecha === hoy);
+  const devolucionesDelDia = devoluciones.filter(d => d.fecha === hoy);
+
+
+  const resetVenta = () => {
+    setCarrito([]);
+    setModoEscaner(false)
+    setBusqueda("");
   };
-  const restaurarProductoFirebase = async (id) => {
-    try {
-      const ref = doc(db, "productos", id);
-      await updateDoc(ref, { eliminado: false });
-      cargarProductos();
-    } catch (error) {
-      console.error("Error restaurando producto:", error);
-    }
-  };
-  //cargar productos
+  
+
+  /* Cargar productos (solo localStorage) */
   useEffect(() => {
-    cargarProductos();
+    const cargar = async () => {
+      const lista = await getProductos();
+      setProductos(lista);
+    };
+    cargar();
   }, []);
   
+  
+  
+  /* Limpiar ventas viejas al iniciar */
+  useEffect(() => {
+    limpiarVentasViejas();
+  }, []);
 
-  // -------------------------
-  // RENDER
-  // -------------------------
+  useEffect(() => {
+    const todasLasVentas = [];
+  
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith("ventas_")) {
+        const data = JSON.parse(localStorage.getItem(key)) || [];
+        todasLasVentas.push(...data);
+      }
+    });
+  
+    setVentas(todasLasVentas);
+  }, []);
+
+  useEffect(() => {
+    const data =
+      JSON.parse(localStorage.getItem("devoluciones_globales")) || [];
+  
+    setDevoluciones(data);
+  }, []);
+  
+  
+
+  /* Recalcular total */
+  useEffect(() => {
+    const nuevoTotal = carrito.reduce(
+      (acc, item) => acc + item.precio * item.cantidad,
+      0
+    );
+    setTotal(nuevoTotal);
+  }, [carrito]);
+
+  useEffect(() => {
+    if (!modoEscaner) return;
+    if (!busqueda) return;
+  
+    const match = productos.find(p => p.codigo === busqueda);
+  
+    if (match) {
+      agregarAlCarrito(match);
+      setBusqueda("");
+    } else {
+      playError();
+      setBusqueda("");
+    }
+  }, [busqueda, modoEscaner, productos]);
+  
+
+  /* =======================
+     CARRITO
+  ======================= */
+  const agregarAlCarrito = (producto) => {
+    playBeep();
+
+    setCarrito(prev => {
+      const existe = prev.find(p => p.id === producto.id);
+      if (existe) {
+        return prev.map(p =>
+          p.id === producto.id
+            ? { ...p, cantidad: p.cantidad + 1 }
+            : p
+        );
+      }
+      return [...prev, { ...producto, cantidad: 1 }];
+    });
+  };
+
+  const restarDelCarrito = (producto) => {
+    setCarrito(prev =>
+      prev
+        .map(p =>
+          p.id === producto.id
+            ? { ...p, cantidad: p.cantidad - 1 }
+            : p
+        )
+        .filter(p => p.cantidad > 0)
+    );
+  };
+
+  const aumentarCantidad = (id) => {
+    setCarrito(prev =>
+      prev.map(p =>
+        p.id === id ? { ...p, cantidad: p.cantidad + 1 } : p
+      )
+    );
+  };
+
+  /* =======================
+     CERRAR VENTA
+  ======================= */
+  const cerrarVenta = () => {
+    if (carrito.length === 0) return;
+
+    const ahora = new Date();
+    const fecha = ahora.toISOString().slice(0, 10);
+    const hora = ahora.toLocaleTimeString();
+
+    const venta = {
+      id: Date.now(),
+      fecha,
+      hora,
+      type: "sale",
+      items: carrito,
+      total,
+      
+    };
+
+    const key = `ventas_${fecha}`;
+    const ventas = JSON.parse(localStorage.getItem(key)) || [];
+ 
+    ventas.push(venta);
+    localStorage.setItem(key, JSON.stringify(ventas));
+    setVentas(prev => [...prev, venta]);
+
+
+    playVentaOk();
+    setVentaOk(true);
+
+    setTimeout(() => {
+      resetVenta();
+      setVentaOk(false);
+    }, 800);
+    
+  };
+  
+
+  /* =======================
+     FILTRO
+  ======================= */
+  const productosFiltrados = productos.filter(p =>
+    modoEscaner
+      ? p.codigo === busqueda
+      : p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+
+  const cantidadDevuelta = (ventaId, itemId) => {
+    return devoluciones
+      .filter(d => d.ventaId === ventaId)
+      .reduce((acc, d) => {
+        const item = d.items.find(i => i.itemId === itemId);
+        return acc + (item?.cantidad || 0);
+      }, 0);
+  };
+  
+  
 
   return (
 
-    
-    <div className="min-h-screen flex flex-col bg-gray-50">
-     <div className="w-full text-center text-xs tracking-widest text-gray-700 py-2 bg-[#E6DDCF]">
-  SUCULENTAS · REGALOS · EVENTOS
-</div>
-
-<Header
-  cartCount={carrito.reduce((sum, item) => sum + (item.cantidad ?? 1), 0)}
-  searchTerm={searchTerm}
-  setSearchTerm={setSearchTerm}
-/>
-
-    <main className="flex-1 w-full ">
-
-      <Routes>
-         <Route 
-           path="/" 
-           element={<Home productos={productos} 
-           agregarAlCarrito={agregarAlCarrito} 
-           searchTerm={searchTerm}
-           />
-          } 
-       />
-
-          <Route
-            path="/producto/:id"
-            element={<ProductPage agregarAlCarrito={agregarAlCarrito} />}
-          />
-
-<Route
-  path="/cart"
-  element={
-    <CartPage 
+    <Routes>
+      <Route
+        path="/"
+        element={
+    <Mostrador
+      productos={productosFiltrados}
       carrito={carrito}
+      busqueda={busqueda}
+      setBusqueda={setBusqueda}
+      agregarAlCarrito={agregarAlCarrito}
       restarDelCarrito={restarDelCarrito}
-      eliminarDelCarrito={eliminarDelCarrito}
       aumentarCantidad={aumentarCantidad}
       total={total}
-      enviarCarritoPorWhatsApp={enviarCarritoPorWhatsApp}
+      playError={playError}
+      cerrarVenta={cerrarVenta}
+      resetVenta={resetVenta}
+      ventaOk={ventaOk}
+      modoEscaner={modoEscaner}
+      setModoEscaner={setModoEscaner}
+    />
+        }
+        />
+        <Route
+  path="/ventas"
+  element={
+    <Ventas
+      ventas={ventas}
+      setVentas={setVentas}
+      devoluciones={devoluciones}
+      setDevoluciones={setDevoluciones}
+      cantidadDevuelta={cantidadDevuelta}
     />
   }
 />
 
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/productos" element={<AdminProductos />}/>
+        <Route path="/historial" element={<HistorialVentas />} />
+        <Route 
+          path="/historial/:fecha"  
+          element={<HistorialDia />}
+        />
+        <Route path="/admin/salidas" element={<Salidas />} />
 
 
-          <Route
-          path="/login"
-          element={<Login setAdminLogueado={setAdminLogueado} />}
-          />
 
-          <Route
-          path="/admin/*"
-          element={<ProtectedRoute setAdminLogueado={setAdminLogueado}>
-           <AdminDashboard 
-            productos={productos}
-            agregarProducto={agregarProducto}
-            eliminarProducto={eliminarProductoFirebase}
-            restaurarProducto={restaurarProductoFirebase}
-            actualizarProducto={actualizarProductoFirebase}
-          />
 
-          
-          </ProtectedRoute>
-          }
-          />
-        </Routes>
-      </main>
-
-      <Footer />
-    </div>
+</Routes>
   );
 }
 
 export default App;
-   
+
+
