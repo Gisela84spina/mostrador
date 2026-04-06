@@ -11,7 +11,6 @@ const HistorialDia = () => {
   const [ventas, setVentas] = useState([]);
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
 
-  const [salidas, setSalidas] = useState([]);
 
 
 
@@ -36,15 +35,6 @@ const HistorialDia = () => {
       alert("No seleccionaste productos");
       return;
     }
-
-
-
-    useEffect(() => {
-      const data =
-        JSON.parse(localStorage.getItem(`salidas_${fecha}`)) || [];
-      setSalidas(data);
-    }, [fecha]);
-    
 
 
 
@@ -83,19 +73,22 @@ const HistorialDia = () => {
     alert("Devolución registrada en el día de hoy");
   };
 
+  const ventasDelDia = ventas.filter(v => v.fecha === fecha);
 
 
-  const totalVentas = ventas.reduce(
-    (acc, v) => acc + (v.type === "sale" ? v.total : -v.total),
-    0
-  );
+
+  const totalVentas = ventasDelDia.reduce((acc, v) => {
+    if (v.type === "sale") return acc + v.total;
+    if (v.type === "refund") return acc - v.total;
+    return acc;
+  }, 0);
   
-  const totalSalidas = salidas.reduce(
-    (acc, s) => acc + s.monto,
-    0
-  );
-  
+  const totalSalidas = ventasDelDia
+  .filter(v => v.type === "expense")
+  .reduce((acc, s) => acc + (s.total || s.monto || 0), 0);
+
   const resultadoDia = totalVentas - totalSalidas;
+ 
   
   
   
@@ -121,11 +114,7 @@ const HistorialDia = () => {
         ⬅ Volver al historial
       </button>
 
-      {ventas.length === 0 && (
-        <p className="text-gray-500">
-          No hubo ventas este día
-        </p>
-      )}
+      
 
 <div className="p-4 border rounded bg-gray-50 space-y-1">
   <p>Total ventas: ${totalVentas}</p>
@@ -141,14 +130,16 @@ const HistorialDia = () => {
     Salidas del día
   </h3>
 
-  {salidas.length === 0 && (
-    <p className="text-gray-500">
-      No hubo salidas este día
-    </p>
-  )}
+  {ventasDelDia.filter(v => v.type === "expense").length === 0 && (
+  <p className="text-gray-500">
+    No hubo movimientos este día
+  </p>
+)}
 
   <ul className="space-y-2">
-    {salidas.map(s => (
+  {ventasDelDia
+  .filter(v => v.type === "expense")
+  .map(s => (
       <li
         key={s.id}
         className="p-3 border rounded bg-white flex justify-between"
@@ -161,7 +152,7 @@ const HistorialDia = () => {
         </div>
 
         <p className="font-semibold text-red-600">
-          - ${s.monto}
+        - ${s.total || s.monto}
         </p>
       </li>
     ))}
@@ -171,7 +162,7 @@ const HistorialDia = () => {
 
 
       <ul className="space-y-3">
-        {ventas.map(v => (
+        {ventasDelDia.map(v => (
           <li
             key={v.id}
             className="p-3 border rounded bg-white flex justify-between items-center"
@@ -181,7 +172,15 @@ const HistorialDia = () => {
                 {v.hora} — ${v.total}
               </p>
               <p className="text-sm text-gray-500">
-                {v.type === "sale" ? "VENTA" : "DEVOLUCIÓN"}
+              {
+  v.type === "sale" && "VENTA"
+}
+{
+  v.type === "refund" && "DEVOLUCIÓN"
+}
+{
+  v.type === "expense" && "GASTO"
+}
               </p>
             </div>
 
